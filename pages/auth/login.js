@@ -6,7 +6,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect } from "react";
 import Loader from "../../components/Loader";
 
-function login() {
+function Login() {
   const route = useRouter();
   const [user, loading] = useAuthState(auth);
 
@@ -48,4 +48,4 @@ function login() {
   );
 }
 
-export default login;
+export default Login;

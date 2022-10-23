@@ -3,14 +3,27 @@ import { auth, db } from "../utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { toast } from "react-toastify";
 
-function post() {
+function Post() {
   const [post, setPost] = useState({ description: "" });
   const [user, loading] = useAuthState(auth);
   const route = useRouter();
+  const routeData = route.query;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    //post validation.
+    if (!post.description) {
+      toast.error("Description Field is empty 😅");
+      return;
+    }
+
+    if (post.description.length > 300) {
+      toast.error("Description is too long 😅");
+      return;
+    }
+
     try {
       const collectionRef = collection(db, "posts");
       const res = await addDoc(collectionRef, {
@@ -20,13 +33,25 @@ function post() {
         avatar: user.photoURL,
         username: user.displayName,
       });
-      console.log(res);
       setPost({ description: "" });
+      toast.success("Post created successfully! ✨");
       return route.push("/");
     } catch (error) {
       console.log(error);
     }
   };
+
+  const checkUser = async () => {
+    if (loading) return;
+    if (!user) return route.push("/auth/login");
+    if (routeData.id) {
+      setPost({ description: routeData.description, id: routeData.id });
+    }
+  };
+
+  useEffect(() => {
+    checkUser();
+  }, [user, loading]);
 
   return (
     <div className="shadow-lg my-20 p-12 max-w-md mx-auto">
@@ -59,4 +84,4 @@ function post() {
   );
 }
 
-export default post;
+export default Post;

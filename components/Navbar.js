@@ -4,7 +4,6 @@ import { auth } from "../utils/firebase";
 
 export default function Navbar() {
   const [user, loading] = useAuthState(auth);
-  console.log(user);
 
   return (
     <nav className="flex justify-between items-center py-10">
